@@ -6,8 +6,8 @@
 
 #To Use this Module you will need to need to add a using statment to load custom objects
 #---In Order words add this to the top of your script---#
-#Import-Module VMware.VimAutomation.HorizonView;
-#Import-Module VMware.Hv.Helper;
+#Using Module VMware.VimAutomation.HorizonView;
+#Using Module VMware.Hv.Helper;
 #Using Module Sapphire.HorizonView;
 #-------------------------------------------------------#
 
