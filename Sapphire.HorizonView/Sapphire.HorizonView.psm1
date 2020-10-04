@@ -1429,13 +1429,13 @@ function Get-UserEntitlements #From Username/UserId
     [Vmware.Hv.EntityId[]]$userEntitlementIds = New-Object VMware.Hv.EntityId;
     [string[]]$PoolNames = $NULL;
 
-    if (Username.Length -gt 0)
+    if ($Username.Length -gt 0)
     {
         $UserId = Get-UserId -Username $Username;
     }
 
     #$userEntitlementIds = $apiService.EntitledUserOrGroup.EntitledUserOrGroup_Get($UserId).LocalData.DesktopUserEntitlements;
-    $userEntitlementIds = $apiService.EntitledUserOrGroup.EntitledUserOrGroup_Get($UserId).LocalData.Desktop; #<-Better Method?
+    $userEntitlementIds = $apiService.EntitledUserOrGroup.EntitledUserOrGroup_Get($UserId).LocalData.Desktops; #<-Better Method?
 
     if ($AsEntitlementId)
     {
