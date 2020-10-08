@@ -1369,7 +1369,7 @@ function Add-AutoPoolMachine #Add 1 to max machines
 
     if ($PoolName.Length -gt 0)
     {
-        $PoolId = Get-DesktopId -PoolName $PoolName;  
+        $PoolId = Get-DesktopId -DesktopName $PoolName;  
     }
     
     $NewSize = $(Get-AutoPoolSize -PoolId $PoolId) + 1;
@@ -1388,7 +1388,7 @@ function Remove-AutoPoolMachine #Subtract 1 from max machines
 
     if ($PoolName.Length -gt 0)
     {
-        $PoolId = Get-DesktopId -PoolName $PoolName;
+        $PoolId = Get-DesktopId -DesktopName $PoolName;
     }
 
     $NewSize = $(Get-AutoPoolSize) - 1;
@@ -1409,7 +1409,7 @@ function Resize-AutoPool #Update Max size of VMware Auto Pool
     
     if ($PoolName.Length -gt 0)
     {
-        $PoolId = Get-DesktopId -PoolName $PoolName;
+        $PoolId = Get-DesktopId -DesktopName $PoolName;
     }
 
     $PoolInfo = $PoolService.read($apiService, $PoolId);
