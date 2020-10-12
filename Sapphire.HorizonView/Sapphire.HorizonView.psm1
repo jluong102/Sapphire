@@ -1413,7 +1413,7 @@ function Add-AutoPoolMachine #Add 1 to max machines
         $PoolId = Get-DesktopId -DesktopName $PoolName;  
     }
     
-    $NewSize = $(Get-AutoPoolSize -PoolId $PoolId) + 1;
+    $NewSize = $(Get-AutoPoolSize -DesktopId $PoolId) + 1;
     Resize-AutoPool -PoolId $PoolId -NewSize $NewSize; 
 
     if ($PSBoundParameter["Verbose"]){Write-Host "Increasing Pool Size from $($NewSize - 1) to $NewSize";}
