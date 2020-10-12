@@ -629,7 +629,7 @@ class QueryData #static
     {
         [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
         [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
-        [VMware.Hv.QueryFilterContains]$QueryFilter = New-Object VMware.Hv.QueryFilterContains;
+        [VMware.Hv.QueryFilterEquals]$QueryFilter = New-Object VMware.Hv.QueryFilterEquals;
         [Object[]]$QueryResults = @();
 
         [VMware.Hv.Services]$apiService = Get-ApiService;
