@@ -1786,7 +1786,7 @@ function Remove-AutoPoolMachine #Subtract 1 from max machines
         $PoolId = Get-DesktopId -DesktopName $PoolName;
     }
 
-    $NewSize = $(Get-AutoPoolSize $DesktopId $PoolId) - 1;
+    $NewSize = $(Get-AutoPoolSize -DesktopId $PoolId) - 1;
     Resize-AutoPool -PoolId $PoolId -NewSize $NewSize;
 
     if ($PSBoundParameters["Verbose"]){Write-Host "Decreasing Pool Size from $($NewSize + 1) to $NewSize";}
