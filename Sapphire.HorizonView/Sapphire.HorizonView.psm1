@@ -625,7 +625,7 @@ class QueryData #static
         return [QueryData]::MachineInfo;
     }
 
-    static [Sapphire_HorizonView_MachineInfo[]]QueryMachines([VMware.HV.EntityId]$Filter, [string]$FilterTo)
+    static [Sapphire_HorizonView_MachineInfo[]]QueryMachines([VMware.Hv.EntityId]$Filter, [string]$FilterTo)
     {
         [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
         [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
