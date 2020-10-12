@@ -387,6 +387,37 @@ class QueryData #static
         return [QueryData]::UserInfo;
     }
 
+    static [Sapphire_HorizonView_UserInfo[]]QueryUsers([Vmware.Hv.EntityId]$Filter, [string]$FilterTo) #Overload to filter results
+    {
+        [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
+        [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
+        [VMware.Hv.QueryFilterEquals]$QueryFilter = New-Object VMware.Hv.QueryFilterEquals;
+        [Object[]]$QueryResults = @();
+
+        [VMware.Hv.Services]$apiService = Get-ApiService;
+
+        [QueryData]::ClearUserQuery();
+
+        $QueryDef.QueryEntityType = 'ADUserOrGroupSummaryView';
+        $QueryDef.Limit = 2000;
+
+        $QueryFilter.MemberName = $FilterTo; #Filter to What
+        $QueryFilter.Value = $Filter;  
+        $QueryDef.Filter = $QueryFilter; #Add Filter
+
+        $QueryResults = $QueryService.QueryService_Query($apiService, $QueryDef).Results;
+
+        foreach($i in $QueryResults) 
+        {
+            if (-not $i.Base.Group)
+            {
+                [QueryData]::UserInfo += [Sapphire_HorizonView_UserInfo]::new($i.Base.LoginName.ToString(), $i.Id, $i.Base.Email);
+            }
+        }   
+
+        return [QueryData]::UserInfo;
+    }
+
     static [void]QueryUsers([string]$Filter, [string]$FilterTo, [switch]$NoRet) #Overload to filter results
     {
         [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
@@ -416,11 +447,73 @@ class QueryData #static
         }   
     }
 
+    static [void]QueryUsers([VMware.Hv.EntityId]$Filter, [string]$FilterTo, [switch]$NoRet) #Overload to filter results
+    {
+        [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
+        [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
+        [VMware.Hv.QueryFilterEquals]$QueryFilter = New-Object VMware.Hv.QueryFilterEquals;
+        [Object[]]$QueryResults = @();
+
+        [VMware.Hv.Services]$apiService = Get-ApiService;
+
+        [QueryData]::ClearUserQuery();
+
+        $QueryDef.QueryEntityType = 'ADUserOrGroupSummaryView';
+        $QueryDef.Limit = 2000;
+
+        $QueryFilter.MemberName = $FilterTo; #Filter to What
+        $QueryFilter.Value = $Filter;  
+        $QueryDef.Filter = $QueryFilter; #Add Filter
+
+        $QueryResults = $QueryService.QueryService_Query($apiService, $QueryDef).Results;
+
+        foreach($i in $QueryResults) 
+        {
+            if (-not $i.Base.Group)
+            {
+                [QueryData]::UserInfo += [Sapphire_HorizonView_UserInfo]::new($i.Base.LoginName.ToString(), $i.Id, $i.Base.Email);
+            }
+        }   
+    }
+
     static [Sapphire_HorizonView_UserInfo[]]QueryUsers_Get([string]$Filter, [string]$FilterTo) #Overload to filter results
     {
         [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
         [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
         [VMware.Hv.QueryFilterContains]$QueryFilter = New-Object VMware.Hv.QueryFilterContains;
+        [Object[]]$QueryResults = @();
+
+        [Sapphire_HorizonView_UserInfo[]]$tempInfo = @();
+
+        [VMware.Hv.Services]$apiService = Get-ApiService;
+
+        [QueryData]::ClearUserQuery();
+
+        $QueryDef.QueryEntityType = 'ADUserOrGroupSummaryView';
+        $QueryDef.Limit = 2000;
+
+        $QueryFilter.MemberName = $FilterTo; #Filter to What
+        $QueryFilter.Value = $Filter;  
+        $QueryDef.Filter = $QueryFilter; #Add Filter
+
+        $QueryResults = $QueryService.QueryService_Query($apiService, $QueryDef).Results;
+
+        foreach($i in $QueryResults) 
+        {
+            if (-not $i.Base.Group)
+            {
+                $tempInfo += [Sapphire_HorizonView_UserInfo]::new($i.Base.LoginName.ToString(), $i.Id, $i.Base.Email);
+            }
+        }   
+
+        return $tempInfo;
+    }
+
+    static [Sapphire_HorizonView_UserInfo[]]QueryUsers_Get([VMware.Hv.EntityId]$Filter, [string]$FilterTo) #Overload to filter results
+    {
+        [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
+        [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
+        [VMware.Hv.QueryFilterEquals]$QueryFilter = New-Object VMware.Hv.QueryFilterEquals;
         [Object[]]$QueryResults = @();
 
         [Sapphire_HorizonView_UserInfo[]]$tempInfo = @();
@@ -705,6 +798,45 @@ class QueryData #static
         }
     }
 
+    static [void]QueryMachines([VMware.Hv.EntityId]$Filter, [string]$FilterTo, [switch]$NoRet)
+    {
+        [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
+        [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
+        [VMware.Hv.QueryFilterEquals]$QueryFilter = New-Object VMware.Hv.QueryFilterEquals;
+        [Object[]]$QueryResults = @();
+
+        [VMware.Hv.Services]$apiService = Get-ApiService;
+
+        [QueryData]::ClearMachineQuery();
+
+        $QueryDef.QueryEntityType = 'MachineSummaryView';
+        $QueryDef.Limit = 2000;
+
+        $QueryFilter.MemberName = $FilterTo; #Filter to What
+        $QueryFilter.Value = $Filter;  
+        $QueryDef.Filter = $QueryFilter; #Add Filter
+
+        $QueryResults = $QueryService.QueryService_Query($apiService, $QueryDef).Results;
+
+        foreach ($i in $QueryResults)
+        {
+            [Sapphire_HorizonView_MachineInfo]$tempInfo = New-Object Sapphire_HorizonView_MachineInfo;
+
+            $tempInfo.MachineName = $i.Base.Name;
+            $tempInfo.MachineId = $i.Id;
+            $tempInfo.DesktopName = $i.Base.DesktopName;
+            $tempInfo.DesktopId = $i.Base.Desktop;
+            $tempInfo.UserId = $i.Base.User;
+            
+            if ($tempInfo.UserId.Length -gt 0)
+            {
+                $tempInfo.Username = $apiService.ADUserOrGroup.ADUserOrGroup_Get($tempInfo.UserId).Base.LoginName.ToString(); #Not returned in Query
+            }
+
+            [QueryData]::MachineInfo += $tempInfo;
+        }
+    }
+
     static [Sapphire_HorizonView_MachineInfo[]]QueryMachines_Get([string]$Filter, [string]$FilterTo)
     {
         [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
@@ -745,6 +877,48 @@ class QueryData #static
 
         return $tempMachines;
     }
+
+    static [Sapphire_HorizonView_MachineInfo[]]QueryMachines_Get([Vmware.Hv.EntityId]$Filter, [string]$FilterTo)
+    {
+        [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
+        [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
+        [VMware.Hv.QueryFilterEquals]$QueryFilter = New-Object VMware.Hv.QueryFilterEquals;
+        [Object[]]$QueryResults = @();
+
+        [Sapphire_HorizonView_MachineInfo[]]$tempMachines = @();
+
+        [VMware.Hv.Services]$apiService = Get-ApiService;
+
+        $QueryDef.QueryEntityType = 'MachineSummaryView';
+        $QueryDef.Limit = 2000;
+
+        $QueryFilter.MemberName = $FilterTo; #Filter to What
+        $QueryFilter.Value = $Filter;  
+        $QueryDef.Filter = $QueryFilter; #Add Filter
+
+        $QueryResults = $QueryService.QueryService_Query($apiService, $QueryDef).Results;
+
+        foreach ($i in $QueryResults)
+        {
+            [Sapphire_HorizonView_MachineInfo]$tempInfo = New-Object Sapphire_HorizonView_MachineInfo;
+
+            $tempInfo.MachineName = $i.Base.Name;
+            $tempInfo.MachineId = $i.Id;
+            $tempInfo.DesktopName = $i.Base.DesktopName;
+            $tempInfo.DesktopId = $i.Base.Desktop;
+            $tempInfo.UserId = $i.Base.User;
+            
+            if ($tempInfo.UserId.Length -gt 0)
+            {
+                $tempInfo.Username = $apiService.ADUserOrGroup.ADUserOrGroup_Get($tempInfo.UserId).Base.LoginName.ToString(); #Not returned in Query
+            }
+
+            $tempMachines += $tempInfo;
+        }
+
+        return $tempMachines;
+    }
+
 
     static [Sapphire_HorizonView_MachineInfo]GetMachine([string]$MachineName)
     {
@@ -885,6 +1059,34 @@ class QueryData #static
         return [QueryData]::DesktopInfo;
     }
 
+    static [Sapphire_HorizonView_DesktopInfo[]]QueryDesktops([VMware.Hv.EntityId]$Filter, [string]$FilterTo)
+    {
+        [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
+        [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
+        [VMware.Hv.QueryFilterEquals]$QueryFilter = New-Object VMware.Hv.QueryFilterEquals;
+        [Object[]]$QueryResults = @();
+
+        [VMware.Hv.Services]$apiService = Get-ApiService;
+
+        [QueryData]::ClearDesktopQuery();
+
+        $QueryDef.QueryEntityType = 'DesktopSummaryView';
+        $QueryDef.Limit = 2000;
+
+        $QueryFilter.MemberName = $FilterTo; #Filter to What
+        $QueryFilter.Value = $Filter;  
+        $QueryDef.Filter = $QueryFilter; #Add Filter
+
+        $QueryResults = $QueryService.QueryService_Query($apiService, $QueryDef).Results;
+
+        foreach ($i in $QueryResults)
+        {
+            [QueryData]::DesktopInfo += [Sapphire_HorizonView_DesktopInfo]::new($i.DesktopSummaryData.Name, $i.Id);
+        }
+
+        return [QueryData]::DesktopInfo;
+    }
+
     static [void]QueryDesktops([string]$Filter, [string]$FilterTo, [switch]$NoRet)
     {
         [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
@@ -911,11 +1113,67 @@ class QueryData #static
         }
     }
 
+    static [void]QueryDesktops([VMware.Hv.EntityId]$Filter, [string]$FilterTo, [switch]$NoRet)
+    {
+        [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
+        [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
+        [VMware.Hv.QueryFilterEquals]$QueryFilter = New-Object VMware.Hv.QueryFilterEquals;
+        [Object[]]$QueryResults = @();
+
+        [VMware.Hv.Services]$apiService = Get-ApiService;
+
+        [QueryData]::ClearDesktopQuery();
+
+        $QueryDef.QueryEntityType = 'DesktopSummaryView';
+        $QueryDef.Limit = 2000;
+
+        $QueryFilter.MemberName = $FilterTo; #Filter to What
+        $QueryFilter.Value = $Filter;  
+        $QueryDef.Filter = $QueryFilter; #Add Filter
+
+        $QueryResults = $QueryService.QueryService_Query($apiService, $QueryDef).Results;
+
+        foreach ($i in $QueryResults)
+        {
+            [QueryData]::DesktopInfo += [Sapphire_HorizonView_DesktopInfo]::new($i.DesktopSummaryData.Name, $i.Id);
+        }
+    }
+
     static [Sapphire_HorizonView_DesktopInfo[]]QueryDesktops_Get([string]$Filter, [string]$FilterTo)
     {
         [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
         [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
         [VMware.Hv.QueryFilterContains]$QueryFilter = New-Object VMware.Hv.QueryFilterContains;
+        [Object[]]$QueryResults = @();
+
+        [Sapphire_HorizonView_DesktopInfo[]]$tempInfo = @();
+
+        [VMware.Hv.Services]$apiService = Get-ApiService;
+
+        [QueryData]::ClearDesktopQuery();
+
+        $QueryDef.QueryEntityType = 'DesktopSummaryView';
+        $QueryDef.Limit = 2000;
+
+        $QueryFilter.MemberName = $FilterTo; #Filter to What
+        $QueryFilter.Value = $Filter;  
+        $QueryDef.Filter = $QueryFilter; #Add Filter
+
+        $QueryResults = $QueryService.QueryService_Query($apiService, $QueryDef).Results;
+
+        foreach ($i in $QueryResults)
+        {
+            $tempInfo += [Sapphire_HorizonView_DesktopInfo]::new($i.DesktopSummaryData.Name, $i.Id);
+        }
+
+        return $tempInfo;
+    }
+
+    static [Sapphire_HorizonView_DesktopInfo[]]QueryDesktops_Get([VMware.Hv.EntityId]$Filter, [string]$FilterTo)
+    {
+        [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
+        [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
+        [VMware.Hv.QueryFilterEquals]$QueryFilter = New-Object VMware.Hv.QueryFilterEquals;
         [Object[]]$QueryResults = @();
 
         [Sapphire_HorizonView_DesktopInfo[]]$tempInfo = @();
@@ -1083,6 +1341,38 @@ class QueryData #static
         return [QueryData]::EntitledInfo;
     }
 
+    static [Sapphire_HorizonView_EntitledInfo[]]QueryEntitled([VMware.Hv.EntityId]$Filter, [string]$FilterTo)
+    {
+        [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
+        [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
+        [VMware.Hv.QueryFilterEquals]$QueryFilter = New-Object VMware.Hv.QueryFilterEquals;
+        [Object[]]$QueryResults = @(0);
+
+        [VMware.Hv.Services]$apiService = Get-ApiService;
+
+        [QueryData]::ClearEntitledQuery();
+
+        $QueryDef.QueryEntityType = 'EntitledUserOrGroupLocalSummaryView';
+        $QueryDef.Limit = 2000;
+
+        $QueryFilter.MemberName = $FilterTo; #Filter to What
+        $QueryFilter.Value = $Filter;  
+        $QueryDef.Filter = $QueryFilter; #Add Filter
+
+        $QueryResults = $QueryService.QueryService_Query($apiService, $QueryDef).Results;
+
+        foreach ($i in $QueryResults)
+        {
+            [string[]]$tempDesktops = $NULL;
+
+            foreach ($j in $i.LocalData.Desktops) {$tempDesktops += $apiService.Desktop.Desktop_Get($j).Base.Name;}  #Get Desktop Name from ID
+
+            [QueryData]::EntitledInfo += [Sapphire_HorizonView_EntitledInfo]::new($i.LocalData.DesktopUserEntitlements, $i.Base.LoginName.ToString(), $i.Id, $tempDesktops, $i.LocalData.Desktops);
+        }
+
+        return [QueryData]::EntitledInfo;
+    }
+
     static [void]QueryEntitled([string]$Filter, [string]$FilterTo, [switch]$NoRet)
     {
         [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
@@ -1113,11 +1403,75 @@ class QueryData #static
         }
     }
 
+    static [void]QueryEntitled([VMware.Hv.EntityId]$Filter, [string]$FilterTo, [switch]$NoRet)
+    {
+        [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
+        [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
+        [VMware.Hv.QueryFilterEquals]$QueryFilter = New-Object VMware.Hv.QueryFilterEquals;
+        [Object[]]$QueryResults = @();
+
+        [VMware.Hv.Services]$apiService = Get-ApiService;
+
+        [QueryData]::ClearEntitledQuery();
+
+        $QueryDef.QueryEntityType = 'EntitledUserOrGroupLocalSummaryView';
+        $QueryDef.Limit = 2000;
+
+        $QueryFilter.MemberName = $FilterTo; #Filter to What
+        $QueryFilter.Value = $Filter;  
+        $QueryDef.Filter = $QueryFilter; #Add Filter
+
+        $QueryResults = $QueryService.QueryService_Query($apiService, $QueryDef).Results;
+
+        foreach ($i in $QueryResults)
+        {
+            [string[]]$tempDesktops = $NULL;
+
+            foreach ($j in $i.LocalData.Desktops) {$tempDesktops += $apiService.Desktop.Desktop_Get($j).Base.Name;}  #Get Desktop Name from ID
+
+            [QueryData]::EntitledInfo += [Sapphire_HorizonView_EntitledInfo]::new($i.LocalData.DesktopUserEntitlements, $i.Base.LoginName.ToString(), $i.Id, $tempDesktops, $i.LocalData.Desktops);
+        }
+    }
+
     static [Sapphire_HorizonView_EntitledInfo[]]QueryEntitled_Get([string]$Filter, [string]$FilterTo)
     {
         [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
         [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
         [VMware.Hv.QueryFilterContains]$QueryFilter = New-Object VMware.Hv.QueryFilterContains;
+        [Object[]]$QueryResults = @();
+
+        [Sapphire_HorizonView_EntitledInfo[]]$tempInfo = @();
+
+        [VMware.Hv.Services]$apiService = Get-ApiService;
+
+        [QueryData]::ClearEntitledQuery();
+
+        $QueryDef.QueryEntityType = 'EntitledUserOrGroupLocalSummaryView';
+        $QueryDef.Limit = 2000;
+
+        $QueryFilter.MemberName = $FilterTo; #Filter to What
+        $QueryFilter.Value = $Filter;  
+        $QueryDef.Filter = $QueryFilter; #Add Filter
+
+        $QueryResults = $QueryService.QueryService_Query($apiService, $QueryDef).Results;
+
+        foreach ($i in $QueryResults)
+        {
+            [string[]]$tempDesktops = $NULL;
+
+            foreach ($j in $i.LocalData.Desktops) {$tempDesktops += $apiService.Desktop.Desktop_Get($j).Base.Name;}  #Get Desktop Name from ID
+
+            $tempInfo += [Sapphire_HorizonView_EntitledInfo]::new($i.LocalData.DesktopUserEntitlements, $i.Base.LoginName.ToString(), $i.Id, $tempDesktops, $i.LocalData.Desktops);
+        }
+
+        return $tempInfo;
+    }
+
+    static [Sapphire_HorizonView_EntitledInfo[]]QueryEntitled_Get([VMware.Hv.EntityId]$Filter, [string]$FilterTo)
+    {
+        [Vmware.Hv.QueryServiceService]$QueryService = New-Object VMware.Hv.QueryServiceService;
+        [VMware.Hv.QueryDefinition]$QueryDef = New-Object VMware.Hv.QueryDefinition;
+        [VMware.Hv.QueryFilterEquals]$QueryFilter = New-Object VMware.Hv.QueryFilterEquals;
         [Object[]]$QueryResults = @();
 
         [Sapphire_HorizonView_EntitledInfo[]]$tempInfo = @();
@@ -1432,7 +1786,7 @@ function Remove-AutoPoolMachine #Subtract 1 from max machines
         $PoolId = Get-DesktopId -DesktopName $PoolName;
     }
 
-    $NewSize = $(Get-AutoPoolSize) - 1;
+    $NewSize = $(Get-AutoPoolSize $DesktopId $PoolId) - 1;
     Resize-AutoPool -PoolId $PoolId -NewSize $NewSize;
 
     if ($PSBoundParameter["Verbose"]){Write-Host "Decreasing Pool Size from $($NewSize + 1) to $NewSize";}
