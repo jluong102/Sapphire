@@ -1741,8 +1741,8 @@ function Get-AutoPoolSize
     param([parameter(Mandatory = $true, Position = 0, ParameterSetName = "DesktopName")][string]$DesktopName,
         [parameter(Mandatory = $true, Position = 0, ParameterSetName = "DesktopId")][VMware.Hv.EntityId]$DesktopId);
 
-    [VMware.Hv.DesktopService]$PoolService = New-Object Vmware.Hv.DesktopService;
-    [VMware.Hv.DesktopService+DesktopInfoHelper]$PoolInfo = New-Object VMware.Hv.DesktopService+DesktopInfoHelper;
+    [VMware.Hv.DesktopService]$DesktopService = New-Object Vmware.Hv.DesktopService;
+    [VMware.Hv.DesktopService+DesktopInfoHelper]$DesktopInfo = New-Object VMware.Hv.DesktopService+DesktopInfoHelper;
     [Vmware.Hv.Services]$apiService = Get-ApiService;
 
     if ($DesktopName.Length -gt 0)
@@ -1750,25 +1750,25 @@ function Get-AutoPoolSize
         $DesktopId = Get-DesktopId -DesktopName $DesktopName;
     }
 
-    $PoolInfo = $PoolService.read($apiService, $DesktopId);
-    return $PoolInfo.getAutomatedDesktopDataHelper().getVmNamingSettingsHelper().getPatternNamingSettingsHelper().getMaxNumberOfMachines(); #Int32
+    $DesktopInfo = $DesktopService.read($apiService, $DesktopId);
+    return $DesktopInfo.getAutomatedDesktopDataHelper().getVmNamingSettingsHelper().getPatternNamingSettingsHelper().getMaxNumberOfMachines(); #Int32
 }
 
 function Add-AutoPoolMachine #Add 1 to max machines
 {
     [CmdletBinding()]
-    param([parameter(Mandatory = $true, Position = 0, ParameterSetName = "PoolName")][string]$PoolName,
-        [parameter(Mandatory = $true, Position = 0, ParameterSetName = "PoolId")][Vmware.Hv.EntityId]$PoolId);
+    param([parameter(Mandatory = $true, Position = 0, ParameterSetName = "PoolName")][string]$DesktopName,
+        [parameter(Mandatory = $true, Position = 0, ParameterSetName = "PoolId")][Vmware.Hv.EntityId]$DesktopId);
 
-    [int]$NewSize;
+    [int]$NewSize = $NULL;
 
-    if ($PoolName.Length -gt 0)
+    if ($DesktopName.Length -gt 0)
     {
-        $PoolId = Get-DesktopId -DesktopName $PoolName;  
+        $DesktopId = Get-DesktopId -DesktopName $DesktopName;  
     }
     
-    $NewSize = $(Get-AutoPoolSize -DesktopId $PoolId) + 1;
-    Resize-AutoPool -PoolId $PoolId -NewSize $NewSize; 
+    $NewSize = $(Get-AutoPoolSize -DesktopId $DesktopId) + 1;
+    Resize-AutoPool -PoolId $DesktopId -NewSize $NewSize; 
 
     if ($PSBoundParameters["Verbose"]){Write-Host "Increasing Pool Size from $($NewSize - 1) to $NewSize";}
 }
@@ -1776,41 +1776,41 @@ function Add-AutoPoolMachine #Add 1 to max machines
 function Remove-AutoPoolMachine #Subtract 1 from max machines
 {
     [CmdletBinding()]
-    param([parameter(Mandatory = $true, Position = 0, ParameterSetName = "PooolName")][string]$PoolName,
-        [parameter(Mandatory = $true, Position = 0, ParameterSetName = "PoolId")][VMware.Hv.EntityId]$PoolId);
+    param([parameter(Mandatory = $true, Position = 0, ParameterSetName = "PooolName")][string]$DesktopName,
+        [parameter(Mandatory = $true, Position = 0, ParameterSetName = "PoolId")][VMware.Hv.EntityId]$DesktopId);
 
-    [int]$NewSize;
+    [int]$NewSize = $NULL;
 
-    if ($PoolName.Length -gt 0)
+    if ($DesktopName.Length -gt 0)
     {
-        $PoolId = Get-DesktopId -DesktopName $PoolName;
+        $DesktopId = Get-DesktopId -DesktopName $DesktopName;
     }
 
-    $NewSize = $(Get-AutoPoolSize -DesktopId $PoolId) - 1;
-    Resize-AutoPool -PoolId $PoolId -NewSize $NewSize;
+    $NewSize = $(Get-AutoPoolSize -DesktopId $DesktopId) - 1;
+    Resize-AutoPool -PoolId $DesktopId -NewSize $NewSize;
 
     if ($PSBoundParameters["Verbose"]){Write-Host "Decreasing Pool Size from $($NewSize + 1) to $NewSize";}
 }
 
 function Resize-AutoPool #Update Max size of VMware Auto Pool
 {
-    param([parameter(Mandatory = $true, Position = 0, ParameterSetName = "PoolName")][string]$PoolName,
-        [parameter(Mandatory = $true, Position = 0, ParameterSetName = "PooId " )][VMware.Hv.EntityId]$PoolId,
+    param([parameter(Mandatory = $true, Position = 0, ParameterSetName = "PoolName")][string]$DesktopName,
+        [parameter(Mandatory = $true, Position = 0, ParameterSetName = "PooId " )][VMware.Hv.EntityId]$DesktopId,
         [parameter(Mandatory = $true)][int]$NewSize);
 
-    [VMware.Hv.DesktopService]$PoolService = New-Object VMware.Hv.DesktopService;
+    [VMware.Hv.DesktopService]$DesktopService = New-Object VMware.Hv.DesktopService;
     [VMware.Hv.Services]$apiService = Get-ApiService;
 
     
-    if ($PoolName.Length -gt 0)
+    if ($DesktopName.Length -gt 0)
     {
-        $PoolId = Get-DesktopId -DesktopName $PoolName;
+        $DesktopId = Get-DesktopId -DesktopName $DesktopName;
     }
 
-    $PoolInfo = $PoolService.read($apiService, $PoolId);
+    $DesktopInfo = $DesktopService.read($apiService, $DesktopId);
 
-    $PoolInfo.getAutomatedDesktopDataHelper().getVmNamingSettingsHelper().getPatternNamingSettingsHelper().setMaxNumberOfMachines($NewSize);
-    $PoolService.update($apiService, $PoolInfo);
+    $DesktopInfo.getAutomatedDesktopDataHelper().getVmNamingSettingsHelper().getPatternNamingSettingsHelper().setMaxNumberOfMachines($NewSize);
+    $DesktopService.update($apiService, $DesktopInfo);
 }
 
 ###User Stuff###
@@ -1822,7 +1822,7 @@ function Get-UserEntitlements #From Username/UserId
 
     [VMware.Hv.Services]$apiService = Get-ApiService;
     [Vmware.Hv.EntityId[]]$userEntitlementIds = New-Object VMware.Hv.EntityId;
-    [string[]]$PoolNames = $NULL;
+    [string[]]$DesktopNames = $NULL;
 
     if ($Username.Length -gt 0)
     {
@@ -1840,10 +1840,10 @@ function Get-UserEntitlements #From Username/UserId
     {
         foreach ($i in $userEntitlementIds)
         {
-            $PoolNames += ConvertFrom-DesktopId -DesktopId $i;
+            $DesktopNames += ConvertFrom-DesktopId -DesktopId $i;
         }
 
-        return $PoolNames;
+        return $DesktopNames;
     }
 }
 
