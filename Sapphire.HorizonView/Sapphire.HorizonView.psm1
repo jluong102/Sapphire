@@ -1768,7 +1768,7 @@ function Add-AutoPoolMachine #Add 1 to max machines
     }
     
     $NewSize = $(Get-AutoPoolSize -DesktopId $DesktopId) + 1;
-    Resize-AutoPool -PoolId $DesktopId -NewSize $NewSize; 
+    Resize-AutoPool -DesktopId $DesktopId -NewSize $NewSize; 
 
     if ($PSBoundParameters["Verbose"]){Write-Host "Increasing Pool Size from $($NewSize - 1) to $NewSize";}
 }
@@ -1787,7 +1787,7 @@ function Remove-AutoPoolMachine #Subtract 1 from max machines
     }
 
     $NewSize = $(Get-AutoPoolSize -DesktopId $DesktopId) - 1;
-    Resize-AutoPool -PoolId $DesktopId -NewSize $NewSize;
+    Resize-AutoPool -DesktopId $DesktopId -NewSize $NewSize;
 
     if ($PSBoundParameters["Verbose"]){Write-Host "Decreasing Pool Size from $($NewSize + 1) to $NewSize";}
 }
