@@ -8,6 +8,8 @@ Collection of PowerShell Tools
    
 ## HorizonView
 
+### Overview
+
 VMware.VimAutomation.HorizonView and VMware.Hv.Helper are needed to use this module.
 
 Due to how this module works add the HorizonView Module with a "Using" over an "Import"
@@ -20,6 +22,8 @@ EXAMPLE:
 Import-Module VMware.Hv.Helper;
 
 Using Module Sapphire.HorizonView;`
+
+### Included Tools
 
 FUNCTIONS:
 
