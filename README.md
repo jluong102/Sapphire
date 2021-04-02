@@ -78,7 +78,7 @@ FUNCTIONS:
 
 **FUNCTIONS**
 
-* ConvertFrom-Cesar
+* ConvertFrom-Caesar
 
 **Objects:**
 
