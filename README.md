@@ -17,7 +17,7 @@ Import-Module VMware.Hv.Helper;
 Using Module Sapphire.HorizonView;`
 
    
-
+## HorizonView
 
 FUNCTIONS:
 
