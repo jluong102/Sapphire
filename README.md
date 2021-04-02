@@ -74,8 +74,6 @@ This binary module can be imported dirertly into PowerShell
 
 ### Included Tools
 
-FUNCTIONS:
-
 **FUNCTIONS**
 
 * ConvertFrom-Caesar
