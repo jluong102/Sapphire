@@ -43,7 +43,7 @@ Using Module Sapphire.HorizonView;
 * Get-MachineUser
 * Get-MachineId
 * Get-DesktopId
-* Get-UserId<
+* Get-UserId
 * Get-UserEntitlements
 * Install-VMwareModules
 * Pop-UserFromMachine
