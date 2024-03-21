@@ -20,11 +20,13 @@ Due to how this module works add the HorizonView Module with a "Using" over an "
 
 EXAMPLE:
     
-`Import-Module VMware.VimAutomation.HorizonView;
+```pwsh
+Import-Module VMware.VimAutomation.HorizonView;
 
 Import-Module VMware.Hv.Helper;
 
-Using Module Sapphire.HorizonView;`
+Using Module Sapphire.HorizonView;
+```
 
 ### Included Tools
 
